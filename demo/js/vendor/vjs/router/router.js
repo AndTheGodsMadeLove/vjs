@@ -12,9 +12,9 @@ import { Resolver } from './resolver.js';
 import { flushElement, isEqual } from './../util/util.js';
 import {
   ROUTER_DEFAULT_OPTIONS,
-  VIEW_DEFAULT_LOCATION_STATE,
   ROUTER_EVT_CLICK,
   ROUTER_EVT_POPSTATE,
+  VIEW_DEFAULT_LOCATION_STATE,
   VIEW_EVT_BEFORE_LEAVE,
   VIEW_EVT_AFTER_LEAVE,
   VIEW_EVT_BEFORE_ENTER,
