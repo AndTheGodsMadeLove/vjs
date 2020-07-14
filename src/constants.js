@@ -49,15 +49,3 @@ export const VIEW_EVT_BEFORE_LEAVE = 'vjs:view:beforeLeave';
  * @type {string} string identifier for the vjs router afterLeave event
  */
 export const VIEW_EVT_AFTER_LEAVE = 'vjs:view:afterLeave';
-
-/**
- * @constant
- * @type {string} string identifier for the vjs router beforeEnter event
- */
-export const VIEW_EVT_BEFORE_ENTER = 'vjs:view:beforeEnter';
-
-/**
- * @constant
- * @type {string} string identifier for the vjs router afterEnter event
- */
-export const VIEW_EVT_AFTER_ENTER = 'vjs:view:afterEnter';

@@ -15,27 +15,15 @@
  */
 
 /**
- * view component of the router
- * @typedef {HTMLElement & IView} ViewComponent
- */
-
-/**
  * @typedef {Object} IView
  * @property {RouterLocation} location
  * @property {function} onBeforeLeave
  * @property {function} onAfterLeave
- * @property {function} onBeforeEnter
- * @property {function} onAfterEnter
  */
 
 /**
- * options
- * @typedef {Object} RouterOptions
- * @property {HTMLElement} container - HTMLElement utilized as container for the components
- * @property {Array.<ResolverRoute>} routes - array of internal route objects
- * @property {boolean} initViewsAtStart - initialize all view components
- * @property {HTMLElement} anchorScan - HTMLElement used to scan for anchor elements
- * @property {boolean} debug - debug mode
+ * view component of the router
+ * @typedef {HTMLElement & IView} ViewComponent
  */
 
 /**
@@ -56,4 +44,14 @@
  * @property {string} componentKey - holds the HTMLTag of the component
  * @property {Object.<string, string>} parameter - holds the parameter of the location
  * @property {string} pathname - string of the current pathname
+ */
+
+/**
+ * options
+ * @typedef {Object} RouterOptions
+ * @property {HTMLElement} container - HTMLElement utilized as container for the components
+ * @property {Array.<ResolverRoute>} routes - array of internal route objects
+ * @property {boolean} initViewsAtStart - initialize all view components
+ * @property {HTMLElement} anchorScan - HTMLElement used to scan for anchor elements
+ * @property {boolean} debug - debug mode
  */

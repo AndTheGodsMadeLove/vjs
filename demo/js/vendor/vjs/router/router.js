@@ -17,8 +17,6 @@ import {
   VIEW_DEFAULT_LOCATION_STATE,
   VIEW_EVT_BEFORE_LEAVE,
   VIEW_EVT_AFTER_LEAVE,
-  VIEW_EVT_BEFORE_ENTER,
-  VIEW_EVT_AFTER_ENTER,
 } from './../constants.js';
 
 /**
@@ -141,7 +139,11 @@ export class Router {
 
     // render component
     flushElement(this._options.container);
-    this._options.container.appendChild(component);
+    if (this._options.container instanceof HTMLElement) {
+      this._options.container.appendChild(component);
+    } else {
+      throw new Error('The "container" property inside the RouterOptions has to be from the type "HTMLElement"');
+    }
   }
 
   /**
@@ -272,15 +274,8 @@ export class Router {
             this._runHookIfAvailable(prevComponent, 'onAfterLeave', VIEW_EVT_AFTER_LEAVE, detail);
           }
 
-          const nextComponent = this._getCachedComponentByKey(state.componentKey);
-          // run lifecycle hooks if available
-          this._runHookIfAvailable(nextComponent, 'onBeforeEnter', VIEW_EVT_BEFORE_ENTER, detail);
-
           // display component
           this._displayComponent(state);
-
-          // run lifecycle hooks if available
-          this._runHookIfAvailable(nextComponent, 'onAfterEnter', VIEW_EVT_AFTER_ENTER, detail);
         }
       })
       .catch((err) => console.log('error>', err));
