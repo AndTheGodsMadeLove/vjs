@@ -41,7 +41,7 @@ VJS aims to be a lightweight framework for native web components which can be ut
 
 #### {Object} IView
 | Name | Type | Description |
-| --- | --- | --- | --- |
+| --- | --- | --- |
 | location | <code>RouterLocation</code> | location object utilized for viewComponents and events |
 | onBeforeLeave | <code>function</code> | lifecycle for ViewComponents, called **before** the events `popstate` and `vjs:router:popstate` are dispatched |
 | onAfterLeave | <code>function</code> |  lifecycle for ViewComponents, called **after** the events `popstate` and `vjs:router:popstate` are dispatched |
