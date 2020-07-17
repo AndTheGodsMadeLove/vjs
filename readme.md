@@ -10,18 +10,18 @@ VJS aims to be a lightweight framework for native web components which can be ut
 - [Router](#router)
   - [Types](#types)
   - [Class: Router](#class-router)
+    - [Constants](#router-constants)
     - [Properties](#router-properties)
     - [Methods](#router-methods)
     - [Events](#router-events)
-  - [Class: Resolver - TBD](#class-resolver)
-    - [Properties - TBD](#resolver-properties)
-    - [Methods - TBD](#resolver-methods)
-    - [Events - TBD](#resolver-events)
-  - [Class: View - TBD](#class-view)
-    - [Properties - TBD](#view-properties)
-    - [Methods - TBD](#view-methods)
-    - [Events - TBD](#view-events)
-  - [Location Object - TBD](#location-object)
+  - [Class: Resolver](#class-resolver)
+    - [Properties](#resolver-properties)
+    - [Methods](#resolver-methods)
+  - [Class: View](#class-view)
+    - [Constants](#view-constants)
+    - [Properties](#view-properties)
+    - [Events](#view-events)
+  - [Location Object](#location-object)
 - [ToDo](#todo)
 
 # Router
@@ -78,11 +78,18 @@ VJS aims to be a lightweight framework for native web components which can be ut
 
 ## Class: Router
 
-
 VJS Router
 Router for SPAs utilizing native web components
 
 #### new Router([RouterOptions])
+
+### <a id="router-constants"></a>Constants
+
+| Name | Type |
+| --- | --- |
+| <code>ROUTER_DEFAULT_OPTIONS</code> |<code>RouterOptions</code> |
+| <code>ROUTER_EVT_CLICK</code> |<code>string</code> |
+| <code>ROUTER_EVT_POPSTATE</code> |<code>string</code> |
 
 ### <a id="router-properties"></a>Properties
 
@@ -214,7 +221,7 @@ click handler for navigation anchor
 handles the back and forward inputs from the browser
 
 | Name | Type |
-|-|-|-|
+|-|-|
 | e | <code>PopStateEvent</code> |
 
 **Returns:** <code>void</code>
@@ -244,11 +251,133 @@ sets location state
 
 #### vjs:router:click
 Emitted when the onclick handler of the router is invoked
-detail <code>{ pathname: string }</code>
+**payload:** detail <code>{ pathname: string }</code>
 
 #### vjs:router:popstate
 Emitted when the onPopState handler of the router is invoked
-state <code>RouterLocation</code>
+**payload:** state <code>RouterLocation</code>
+
+## Class: Resolver
+
+VJS Resolver
+Resolver utilized by VJS Router
+
+#### new Resolver()
+
+### <a id="resolver-properties"></a>Properties
+
+| Name | Access modifier | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| _routes | private | <code>Array.\<ResolverRoute\></code> | <code>[]</code> | routes |
+
+### <a id="resolver-methods"></a>Methods
+
+#### getRoutes()
+returns configured routes
+
+**Returns:** <code>Array.<RouterRoute></code>
+
+#### removeRoute(route)
+removes a route from the existing configuration
+
+| Name | Type |
+|-|-|
+| route | <code>RouterRoute</code> |
+
+**Returns:** <code>void</code>
+
+#### removeRouteByPath(path)
+remove a route from the existing configuration filtered by the path property of the route object
+
+| Name | Type |
+|-|-|
+| path | <code>string</code> |
+
+**Returns:** <code>void</code>
+
+#### resolve(pathname)
+resolves pathname into its componentKey and parameters
+
+| Name | Type |
+|-|-|
+| path | <code>object</code> |
+
+**Returns:** <code>Promise</code>
+
+#### setRoutes(routes)
+set routes for the router
+
+| Name | Type |
+|-|-|
+| routes | <code>Array.\<RouterRoute\></code> |
+
+**Returns:** <code>void</code>
+
+#### _createMatchExp(path)
+returns the regular expression to perform search queries on the routes
+
+| Name | Type |
+|-|-|
+| path | <code>string</code> |
+
+**Returns:** <code>RegExp</code>
+
+#### _createRoute(route)
+returns a internal route object
+
+| Name | Type |
+|-|-|
+| route | <code>RouterRoute</code> |
+
+**Returns:** <code>ResolverRoute</code>
+
+#### _replaceCallback(match, groupName, isOptionalModifierString)
+returns a internal route object
+
+| Name | Type |
+|-|-|
+| match | <code>string</code> |
+| groupName | <code>string</code> |
+| isOptionalModifierString | <code>string</code> |
+
+**Returns:** <code>string</code>
+
+## Class: View
+
+
+VJS ViewComponent
+ViewComponent of VJS Router, expands lifecycle and grants access the location object. This file is only used for documentation has no use in a production environment!
+
+#### new View()
+
+### <a id="view-constants"></a>Constants
+
+| Name | Type |
+| --- | --- |
+| <code>VIEW_DEFAULT_LOCATION_STATE</code> | <code>RouterLocation</code> |
+| <code>VIEW_EVT_AFTER_LEAVE</code> | <code>string</code> |
+| <code>VIEW_EVT_BEFORE_LEAVE</code> | <code>string</code> |
+
+### <a id="view-properties"></a>Properties
+
+| Name | Access modifier | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| location | public | <code>RouterLocation</code> | <code>VIEW_DEFAULT_LOCATION_STATE</code> | cache for initialized components |
+
+
+### <a id="view-events"></a>Events
+
+#### vjs:view:beforeLeave
+Emitted **before** the <code>popstate</code> events</code>
+**payload:** detail <code>RouterLocation</code>
+
+#### vjs:view:afterLeave
+Emitted **between** the <code>popstate</code> events and the <code>disconnectedCallback</code> of the <code>ViewComponent</code>
+**payload:** state <code>RouterLocation</code>
+
+## Location Object
+
+The Location Object is from the type <code>RouterLocation</code> and will be used as payload for events and developer will get access to the Location Object inside all <code>ViewComponents</code> with <code>this.location</code>.
 
 ## ToDo
 - finish readme
