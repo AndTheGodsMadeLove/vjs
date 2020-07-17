@@ -110,7 +110,7 @@ returns current router configuration
 #### getRoutes()
 returns configured routes
 
-**Returns:** <code>Array.<RouterRoute></code>
+**Returns:** <code>Array.\<RouterRoute\></code>
 
 #### goTo(url)
 load component by url
@@ -275,7 +275,7 @@ Resolver utilized by VJS Router
 #### getRoutes()
 returns configured routes
 
-**Returns:** <code>Array.<RouterRoute></code>
+**Returns:** <code>Array.\<RouterRoute\></code>
 
 #### removeRoute(route)
 removes a route from the existing configuration
