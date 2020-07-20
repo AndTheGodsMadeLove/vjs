@@ -1,33 +1,57 @@
 [![GitHub license](https://img.shields.io/github/license/AndTheGodsMadeLove/vjs.svg)](https://github.com/AndTheGodsMadeLove/vjs/blob/master/LICENSE) [![GitHub tag](https://img.shields.io/github/tag/AndTheGodsMadeLove/vjs.svg)](https://GitHub.com/AndTheGodsMadeLove/vjs/tags/) ![GitHub commits](https://img.shields.io/github/commits-since/AndTheGodsMadeLove/vjs/v0.1-alpha.svg) [![GitHub contributors](https://img.shields.io/github/contributors/AndTheGodsMadeLove/vjs.svg)](https://GitHub.com/AndTheGodsMadeLove/vjs/graphs/contributors/) [![Github all releases](https://img.shields.io/github/downloads/AndTheGodsMadeLove/vjs/total.svg)](https://GitHub.com/AndTheGodsMadeLove/vjs/releases/)
 
 # VJS
-VJS aims to be a lightweight framework for native web components which can be utilized to create SPA without almost any effort. Feel free to contribute in any way, your input is highly welcome! :thumbsup:
+The goal for VJS is to provide functionality for the most common tasks frontend developer run into while they create SPA applications based on native custom elements. 
 
-**The project itself is in the very beginning of the development process and almost everything is missing at this point.** :thumbsdown:
+**Feel free to contribute in any way, your input is highly welcome!** :thumbsup:
 
-## Table of Contents
--  [Getting Started - TBD](#getting-started)
-- [Router](#router)
-  - [Types](#types)
-  - [Class: Router](#class-router)
-    - [Constants](#router-constants)
-    - [Properties](#router-properties)
-    - [Methods](#router-methods)
-    - [Events](#router-events)
-  - [Class: Resolver](#class-resolver)
-    - [Properties](#resolver-properties)
-    - [Methods](#resolver-methods)
-  - [Class: View](#class-view)
-    - [Constants](#view-constants)
-    - [Properties](#view-properties)
-    - [Events](#view-events)
-  - [Location Object](#location-object)
-- [ToDo](#todo)
 
-# Router
+# Table of Contents
+- [Table of Contents](#table-of-contents)
+- [Project Goals](#project-goals)
+- [Next Steps](#next-steps)
+- [Getting Started - TBD](#getting-started)
+- [Documentation](#documentation)
+  - [Router](#router)
+    - [Types](#types)
+    - [Class: Router](#class-router)
+      - [Constants](#router-constants)
+      - [Properties](#router-properties)
+      - [Methods](#router-methods)
+      - [Events](#router-events)
+    - [Class: Resolver](#class-resolver)
+      - [Properties](#resolver-properties)
+      - [Methods](#resolver-methods)
+    - [Class: View](#class-view)
+      - [Constants](#view-constants)
+      - [Properties](#view-properties)
+      - [Events](#view-events)
+    - [Location Object](#location-object)
+
+# Project Goals
+The goal for VJS is to provide functionality for the most common tasks of a frontend developer like routing, user management, localizations and whatnot once all common browser fully support <a href="https://www.ecma-international.org/ecma-262/" target="_blank"><code>ECMA2020</code></a>. I guess there is a lot of time then :grin:
+
+# Next Steps
+- create proper demo page for github
+- finish readme
+- create changelog
+- remove _log from router.js and create a logger
+- replace the quick'n'dirty JSDocs with proper ones
+- implement redirects
+- implement animated transitions
+- add the option to pass a callback to routes which will be invoked when the view component finished its rendering process
+- lazy loading
+- error handling
+- test in firefox and safari
+- create a store for optional state management
+
+
+# Documentation
+
+## Router
 > A router is a key component in most frontend frameworks. It is the piece of software in charge to organize the states of the application and switching between different views.
 
-## Types
+### Types
 
 #### {Object} IResolverRoute
 | Name | Type | Description |
@@ -76,7 +100,7 @@ VJS aims to be a lightweight framework for native web components which can be ut
 | anchorScan | <code>HTMLElement</code> | <code>null</code> | HTMLElement used to scan for `HTMLAnchorElement` |
 | debug | <code>boolean</code> | <code>false</code> | debug mode |
 
-## Class: Router
+### Class: Router
 
 VJS Router
 Router for SPAs utilizing native web components
@@ -257,7 +281,7 @@ Emitted when the onclick handler of the router is invoked
 Emitted when the onPopState handler of the router is invoked
 **payload:** state <code>RouterLocation</code>
 
-## Class: Resolver
+### Class: Resolver
 
 VJS Resolver
 Resolver utilized by VJS Router
@@ -342,7 +366,7 @@ returns a internal route object
 
 **Returns:** <code>string</code>
 
-## Class: View
+### Class: View
 
 
 VJS ViewComponent
@@ -375,18 +399,6 @@ Emitted **before** the <code>popstate</code> events</code>
 Emitted **between** the <code>popstate</code> events and the <code>disconnectedCallback</code> of the <code>ViewComponent</code>
 **payload:** state <code>RouterLocation</code>
 
-## Location Object
+### Location Object
 
 The Location Object is from the type <code>RouterLocation</code> and will be used as payload for events and developer will get access to the Location Object inside all <code>ViewComponents</code> with <code>this.location</code>.
-
-## ToDo
-- finish readme
-- create changelog
-- remove _log from router.js and create a logger
-- replace the quick'n'dirty JSDocs with proper ones
-- implement redirects
-- implement animated transitions
-- add the option to pass a callback to routes which will be invoked when the view component finished its rendering process
-- lazy loading
-- error handling
-- test in firefox and safari
