@@ -1,5 +1,4 @@
 /**
- * @author Samuel Weber <info@samuelweber.at>
  * @version 0.1-alpha
  */
 
@@ -17,7 +16,7 @@ export class Resolver {
      * @private
      * @type {Array.<ResolverRoute>}
      */
-    this._routes = [];
+    this.routes = [];
   }
 
   /**
@@ -27,8 +26,8 @@ export class Resolver {
    * @param {string} path
    * @returns {RegExp}
    */
-  _createMatchExp(path) {
-    const regexStr = path.replace(/:([\w-]+)(\?{0,1})/g, this._replaceCallback);
+  createMatchExp(path) {
+    const regexStr = path.replace(/:([\w-]+)(\?{0,1})/g, this.replaceCallback);
 
     return new RegExp(`^${regexStr}$`);
   }
@@ -41,7 +40,7 @@ export class Resolver {
    * @param {string} isOptionalModifierString
    * @returns {string}
    */
-  _replaceCallback(match, groupName, isOptionalModifierString) {
+  replaceCallback(match, groupName, isOptionalModifierString) {
     let str = `(?<${groupName}>[\\w-]+)`;
     if (isOptionalModifierString === '?') {
       str = `?${str}?`;
@@ -56,8 +55,8 @@ export class Resolver {
    * @param {RouterRoute} route
    * @returns {ResolverRoute}
    */
-  _createRoute(route) {
-    const matchExp = this._createMatchExp(route.path);
+  createRoute(route) {
+    const matchExp = this.createMatchExp(route.path);
     return {
       matchExp,
       path: route.path,
@@ -71,7 +70,7 @@ export class Resolver {
    * @param {Array.<RouterRoute>} routes
    */
   setRoutes(routes) {
-    this._routes = routes.map((route) => this._createRoute(route));
+    this.routes = routes.map((route) => this.createRoute(route));
   }
 
   /**
@@ -80,7 +79,7 @@ export class Resolver {
    * @returns {Array.<RouterRoute>}
    */
   getRoutes() {
-    return this._routes.map((route) => ({
+    return this.routes.map((route) => ({
       path: route.path,
       component: route.component,
     }));
@@ -92,7 +91,7 @@ export class Resolver {
    * @param {RouterRoute} route
    */
   removeRoute(route) {
-    this._routes = this._routes.filter((r) => r.path !== route.path);
+    this.routes = this.routes.filter((r) => r.path !== route.path);
   }
 
   /**
@@ -102,7 +101,7 @@ export class Resolver {
    * @param {string} path
    */
   removeRouteByPath(path) {
-    this._routes = this._routes.filter((r) => r.path !== path);
+    this.routes = this.routes.filter((r) => r.path !== path);
   }
 
   /**
@@ -113,10 +112,10 @@ export class Resolver {
   resolve(pathname) {
     const strippedPathname = pathname.replace(/\/$/, '') || '/';
     return new Promise((resolve, reject) => {
-      for (let i = 0; i < this._routes.length; ++i) {
-        const match = strippedPathname.match(this._routes[i].matchExp);
+      for (let i = 0; i < this.routes.length; ++i) {
+        const match = strippedPathname.match(this.routes[i].matchExp);
         if (match) {
-          const componentKey = this._routes[i].component;
+          const componentKey = this.routes[i].component;
           // @ts-ignore - default ts compiler does not support group property on RegExpMatchArray
           const parameter = match.groups;
           resolve({ componentKey, parameter, pathname });

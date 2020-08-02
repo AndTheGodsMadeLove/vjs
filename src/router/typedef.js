@@ -1,41 +1,8 @@
 /**
- * this file only exists for documentation and some IDEs
- * can utilize this file too
- */
-
-/**
- * private route
- * @typedef {Object} IResolverRoute
- * @property {RegExp} matchExp - RegExp used to match urls
- */
-
-/**
- * @typedef {Object} IRouterLocation
- * @property {RouterLocation} location
- */
-
-/**
- * @typedef {Object} IView
- * @property {RouterLocation} location
- * @property {function} onBeforeLeave
- * @property {function} onAfterLeave
- */
-
-/**
- * view component of the router
- * @typedef {HTMLElement & IView} ViewComponent
- */
-
-/**
  * public route
  * @typedef {Object} RouterRoute
  * @property {string} path - path of the route
  * @property {string} component - HTML tag of the component
- */
-
-/**
- * private route
- * @typedef {RouterRoute & IResolverRoute} ResolverRoute
  */
 
 /**
@@ -54,4 +21,12 @@
  * @property {boolean} initViewsAtStart - initialize all view components
  * @property {HTMLElement} anchorScan - HTMLElement used to scan for anchor elements
  * @property {boolean} debug - debug mode
+ */
+
+/**
+ * public route
+ * @typedef {Object} ResolverRoute
+ * @property {string} path - path of the route
+ * @property {string} component - HTML tag of the component
+ * @property {RegExp} matchExp - RegExp used to match urls
  */

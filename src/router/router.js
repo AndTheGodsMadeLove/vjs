@@ -1,23 +1,44 @@
 /**
- * @author Samuel Weber <info@samuelweber.at>
  * @version 0.1-alpha
  *
  * @requires './resolver.js:Resolver
  * @requires './../util/util.js:flushElement
  * @requires './../util/util.js:isEqual
- * @requires './../constants.js:ROUTER_DEFAULT_OPTIONS
- * @requires './../constants.js:VIEW_DEFAULT_LOCATION_STATE
  */
+
+// eslint-disable-next-line
+/// <reference path='./typedef.js' />
+
 import { Resolver } from './resolver.js';
 import { flushElement, isEqual } from './../util/util.js';
-import {
-  ROUTER_DEFAULT_OPTIONS,
-  ROUTER_EVT_CLICK,
-  ROUTER_EVT_POPSTATE,
-  VIEW_DEFAULT_LOCATION_STATE,
-  VIEW_EVT_BEFORE_LEAVE,
-  VIEW_EVT_AFTER_LEAVE,
-} from './../constants.js';
+
+/**
+ * default options
+ * @type {RouterOptions} ROUTER_DEFAULT_OPTIONS
+ */
+export const ROUTER_DEFAULT_OPTIONS = {
+  container: null,
+  routes: [],
+  initViewsAtStart: false,
+  anchorScan: null,
+  debug: false,
+};
+
+export const ROUTER_DEFAULT_LOCATION_STATE = {
+  componentKey: null,
+  parameter: {},
+  pathname: null,
+};
+
+export const ROUTER_EVT_CLICK = 'vjs:router:click';
+
+export const ROUTER_EVT_POPSTATE = 'vjs:router:popstate';
+
+export const ROUTER_EVT_NAVIGATE = 'vjs:router:navigate';
+
+export const ROUTER_EVT_BEFORE_LEAVE = 'vjs:router:beforeLeave';
+
+export const ROUTER_EVT_AFTER_LEAVE = 'vjs:router:afterLeave';
 
 /**
  * VJS Router
@@ -26,58 +47,70 @@ import {
 export class Router {
   /**
    * initialize Router
+   * @param {HTMLElement} container
    * @param {Object.<string, any>} [options]
    */
-  constructor(options = ROUTER_DEFAULT_OPTIONS) {
+  constructor(container, options = ROUTER_DEFAULT_OPTIONS) {
     /**
      * holds the configuration of the router
      * @private
      * @type {RouterOptions}
      */
-    this._options;
+    this.options;
+
+    /**
+     * surface HTMLElement for the router views
+     * @private
+     * @type {HTMLElement}
+     */
+    this.container = container;
 
     /**
      * cache of loaded components
      * @private
-     * @type {Map.<string, ViewComponent>}
+     * @type {Map.<string, HTMLElement>}
      */
-    this._cache = new Map();
+    this.cache = new Map();
 
     /**
      * current state of the router
      * @private
      * @type {RouterLocation}
      */
-    this._location;
+    this.location;
 
     /**
      * VJS Resolver
      * @private
      * @type {Resolver}
      */
-    this._resolver = new Resolver();
+    this.resolver = new Resolver();
 
     // force scope on methods used by eventListener
-    this._onAnchorClick = this._onAnchorClick.bind(this);
-    this._onPopState = this._onPopState.bind(this);
+    this.onAnchorClick = this.onAnchorClick.bind(this);
+    this.onPopState = this.onPopState.bind(this);
 
     // initialize Router
 
     // set merged options
     this.setOptions(options);
     // set default location state
-    this._setLocation(VIEW_DEFAULT_LOCATION_STATE);
+    this.setLocation(ROUTER_DEFAULT_LOCATION_STATE);
     // init all view components if required
-    if (this._options.initViewsAtStart) {
-      this._resolver.getRoutes().forEach((r) => this._initComponent(r.component));
+    if (this.options.initViewsAtStart) {
+      this.resolver.getRoutes().forEach((r) => this.initComponent(r.component));
     }
     // scan HTMLElement for HTMLAnchorElements and
     // add eventListener
-    if (this._options.anchorScan && this._options.anchorScan instanceof HTMLElement) {
-      this._anchorScan(this._options.anchorScan);
+    if (this.options.anchorScan && this.options.anchorScan instanceof HTMLElement) {
+      this.anchorScan(this.options.anchorScan);
     }
 
-    window.addEventListener('popstate', this._onPopState);
+    window.addEventListener('popstate', this.onPopState);
+    window.addEventListener(ROUTER_EVT_NAVIGATE, (e) => {
+      const { detail } = /** @type {CustomEvent} */(e);
+      this.goTo(detail.url);
+    });
   }
 
   /**
@@ -85,7 +118,7 @@ export class Router {
    * @private
    * @param {RouterLocation} location
    */
-  _setLocation(location) {
+  setLocation(location) {
     this._location = {
       ...this._location,
       ...location,
@@ -97,7 +130,7 @@ export class Router {
    * @private
    * @returns {RouterLocation}
    */
-  _getLocation() {
+  getLocation() {
     return { ...this._location };
   }
 
@@ -106,9 +139,9 @@ export class Router {
    * @private
    * @param {HTMLElement} root - element used for anchorScan
    */
-  _anchorScan(root) {
+  anchorScan(root) {
     const anchorElement = [...root.querySelectorAll('a')];
-    anchorElement.forEach((a) => a.addEventListener('click', this._onAnchorClick));
+    anchorElement.forEach((a) => a.addEventListener('click', this.onAnchorClick));
   }
 
   /**
@@ -116,9 +149,9 @@ export class Router {
    * @private
    * @param {string} componentKey
    */
-  _initComponent(componentKey) {
-    const component = /** @type {ViewComponent} **/(document.createElement(componentKey));
-    this._cache.set(componentKey, component);
+  initComponent(componentKey) {
+    const component = document.createElement(componentKey);
+    this.cache.set(componentKey, component);
   }
 
   /**
@@ -126,21 +159,22 @@ export class Router {
    * @private
    * @param {RouterLocation} state
    */
-  _displayComponent(state) {
+  displayComponent(state) {
     // init component if not already in cache
-    if (!this._cache.has(state.componentKey)) {
-      this._initComponent(state.componentKey);
+    if (!this.cache.has(state.componentKey)) {
+      this.initComponent(state.componentKey);
     }
 
     // get component and update location object
-    const component = this._cache.get(state.componentKey);
-    this._setLocation(state);
-    component.location = this._getLocation();
+    const component = this.cache.get(state.componentKey);
+    this.setLocation(state);
+    // @ts-ignore
+    component.location = this.getLocation();
 
     // render component
-    flushElement(this._options.container);
-    if (this._options.container instanceof HTMLElement) {
-      this._options.container.appendChild(component);
+    flushElement(this.container);
+    if (this.container instanceof HTMLElement) {
+      this.container.appendChild(component);
     } else {
       throw new Error('The "container" property inside the RouterOptions has to be from the type "HTMLElement"');
     }
@@ -151,52 +185,41 @@ export class Router {
    * @param {string} type
    * @param {object} detail
    */
-  _dispatchRouterEvent(type, detail) {
-    this._log('Router._dispatchRouterEvent', { type, detail });
+  dispatchRouterEvent(type, detail) {
     window.dispatchEvent(new CustomEvent(type, { detail }));
   }
 
   /**
    * @private
    * @param {string} componentKey
-   * @returns {ViewComponent}
+   * @returns {HTMLElement}
    */
-  _getCachedComponentByKey(componentKey) {
+  getCachedComponentByKey(componentKey) {
     if (componentKey === null) return null;
 
-    if (!this._cache.has(componentKey)) {
-      this._initComponent(componentKey);
+    if (!this.cache.has(componentKey)) {
+      this.initComponent(componentKey);
     }
-    return this._cache.get(componentKey);
+    return this.cache.get(componentKey);
   }
 
   /**
    * @private
-   * @param {ViewComponent} component
+   * @param {HTMLElement} component
    * @param {string} callbackName
    * @param {string} eventIdentifier
    * @param {object} payload
    */
-  _runHookIfAvailable(component, callbackName, eventIdentifier, payload) {
+  runHookIfAvailable(component, callbackName, eventIdentifier, payload) {
     // check if there is a callback we have to invoke
     if (typeof component[callbackName] === 'function') {
       // invoke callback
-      component[callbackName](payload);
+      const { prevLocation, nextLocation } = payload;
+      component[callbackName](prevLocation, nextLocation);
     }
 
     // dispatch beforeLeave event
-    this._dispatchRouterEvent(eventIdentifier, payload);
-  }
-
-  /**
-   * produces a log entry in the devTools if enabled in options
-   * @param {string} reference
-   * @param {any} payload
-   */
-  _log(reference, payload) {
-    if (this._options.debug) {
-      console.log(reference, payload);
-    }
+    this.dispatchRouterEvent(eventIdentifier, payload);
   }
 
   /**
@@ -204,10 +227,10 @@ export class Router {
    * @private
    * @param {MouseEvent} e
    */
-  _onAnchorClick(e) {
+  onAnchorClick(e) {
     e.preventDefault();
     const { pathname } = /** @type {HTMLAnchorElement} **/(e.target);
-    this._dispatchRouterEvent(ROUTER_EVT_CLICK, { pathname });
+    this.dispatchRouterEvent(ROUTER_EVT_CLICK, { pathname });
     this.goTo(pathname);
   }
 
@@ -216,8 +239,8 @@ export class Router {
    * @private
    * @param {PopStateEvent} e
    */
-  _onPopState({ state }) {
-    this._displayComponent(state);
+  onPopState({ state }) {
+    this.displayComponent(state);
   }
 
   /**
@@ -226,12 +249,12 @@ export class Router {
    * @param {Object.<string, any>} options
    */
   setOptions(options) {
-    this._options = {
+    this.options = {
       ...ROUTER_DEFAULT_OPTIONS,
       ...options,
     };
 
-    this.setRoutes(this._options.routes);
+    this.setRoutes(this.options.routes);
   }
 
   /**
@@ -240,7 +263,7 @@ export class Router {
    * @returns {RouterOptions}
    */
   getOptions() {
-    return { ...this._options };
+    return { ...this.options };
   }
 
   /**
@@ -249,33 +272,33 @@ export class Router {
    * @param {string} url
    */
   goTo(url) {
-    this._resolver.resolve(url)
+    this.resolver.resolve(url)
       .then((state) => {
         // guard clause checking if there is a state change
-        if (!isEqual(this._getLocation(), state)) {
+        if (!isEqual(this.getLocation(), state)) {
           // compose detail object
           const detail = {
-            prevLocation: this._getLocation(),
+            prevLocation: this.getLocation(),
             nextLocation: state,
           };
           // fetch current view component if possible
-          const prevComponent = this._getCachedComponentByKey(this._getLocation().componentKey);
+          const prevComponent = this.getCachedComponentByKey(this.getLocation().componentKey);
           if (prevComponent !== null) {
             // run lifecycle hooks if available
-            this._runHookIfAvailable(prevComponent, 'onBeforeLeave', VIEW_EVT_BEFORE_LEAVE, detail);
+            this.runHookIfAvailable(prevComponent, 'onBeforeLeave', ROUTER_EVT_BEFORE_LEAVE, detail);
           }
 
           // update history and dispatch popstate event
           window.history.pushState(state, '', state.pathname);
-          this._dispatchRouterEvent(ROUTER_EVT_POPSTATE, state);
+          this.dispatchRouterEvent(ROUTER_EVT_POPSTATE, state);
 
           if (prevComponent !== null) {
             // run lifecycle hooks if available
-            this._runHookIfAvailable(prevComponent, 'onAfterLeave', VIEW_EVT_AFTER_LEAVE, detail);
+            this.runHookIfAvailable(prevComponent, 'onAfterLeave', ROUTER_EVT_AFTER_LEAVE, detail);
           }
 
           // display component
-          this._displayComponent(state);
+          this.displayComponent(state);
         }
       })
       .catch((err) => console.log('error>', err));
@@ -287,7 +310,7 @@ export class Router {
    * @param {Array.<RouterRoute>} routes
    */
   setRoutes(routes) {
-    this._resolver.setRoutes(routes);
+    this.resolver.setRoutes(routes);
   }
 
   /**
@@ -296,7 +319,7 @@ export class Router {
    * @returns {Array.<RouterRoute>}
    */
   getRoutes() {
-    return this._resolver.getRoutes();
+    return this.resolver.getRoutes();
   }
 
   /**
@@ -305,7 +328,7 @@ export class Router {
    * @param {RouterRoute} route
    */
   removeRoute(route) {
-    this._resolver.removeRoute(route);
+    this.resolver.removeRoute(route);
   }
 
   /**
@@ -315,6 +338,17 @@ export class Router {
    * @param {string} path
    */
   removeRouteByPath(path) {
-    this._resolver.removeRouteByPath(path);
+    this.resolver.removeRouteByPath(path);
+  }
+
+  /**
+   * load component by url
+   * @public
+   * @param {string} url
+   */
+  static go(url) {
+    window.dispatchEvent(new CustomEvent(ROUTER_EVT_NAVIGATE, {
+      detail: { url },
+    }));
   }
 }
