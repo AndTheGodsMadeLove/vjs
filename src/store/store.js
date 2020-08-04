@@ -130,13 +130,14 @@ export class Store {
     // if there is a tempState set, all data are gathered now and the state is ready.
     //
     // * set tempState back to null (dispatch utilizes state object instead of tempState object)
-    // * fill state object with gathered data
     // * simulate empty prevState
     if (this.tempState !== null) {
       this.tempState = null;
-      this.state = nextState;
       prevState = {};
     }
+
+    // update state
+    this.state = nextState;
 
     // iterate listener
     this.listenerList.forEach((listener) => {
