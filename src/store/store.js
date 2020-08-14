@@ -69,6 +69,9 @@ export class Store {
    * @param {object} state
    */
   setInitialState(state) {
+    if (!isObject(state)) {
+      throw new Error('state has to be an object');
+    }
     if (this._containsUndefined(state)) {
       this.tempState = state;
     } else {
@@ -82,7 +85,7 @@ export class Store {
    * @returns {boolean}
    */
   isStateReady() {
-    return !this._containsUndefined(this.state) && isObject(this.state);
+    return !isObject(this.state) && this._containsUndefined(this.state);
   }
 
   /**
@@ -136,7 +139,7 @@ export class Store {
       prevState = {};
     }
 
-    // update state
+    // update state object
     this.state = nextState;
 
     // iterate listener
